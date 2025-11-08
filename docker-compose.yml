@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  cambium-agent:
+    build: .
+    container_name: crulon-cambium-agent
+    ports:
+      - "${PORT:-8000}:${PORT:-8000}"
+    environment:
+      - ROUTER_USER=${ROUTER_USER}
+      - ROUTER_PASS=${ROUTER_PASS}
+      - API_TOKEN=${API_TOKEN}
+      - PORT=${PORT:-8000}
+    env_file:
+      - .env
+    restart: unless-stopped
+    network_mode: bridge
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:${PORT:-8000}/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
